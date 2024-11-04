@@ -13,9 +13,10 @@ __getattr__ = lazy_load(
     },
     {
         'NuttxSerial': '.serial',
+        'NuttxDut': '.dut',
     },
 )
 
-__all__ = ['NuttxApp', 'NuttxSerial']
+__all__ = ['NuttxApp', 'NuttxSerial', 'NuttxDut']
 
 __version__ = '1.11.8'
