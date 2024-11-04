@@ -1,4 +1,3 @@
-import logging
 from typing import ClassVar, Dict, Optional
 
 import esptool
@@ -36,19 +35,10 @@ class NuttxSerial(EspSerial):
         **kwargs,
     ) -> None:
         self.app = app
-        self.skip_autoflash = True
         super().__init__(
             target=target or self.app.target,
             **kwargs,
         )
-        print(self.app)
-
-    def _start(self):
-        if self.skip_autoflash:
-            logging.info('Skipping auto flash...')
-            super()._start()
-        else:
-            pass
 
     @EspSerial.use_esptool()
     def flash(self) -> None:

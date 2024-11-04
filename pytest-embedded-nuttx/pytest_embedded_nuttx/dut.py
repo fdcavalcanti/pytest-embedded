@@ -25,7 +25,7 @@ class NuttxDut(SerialDut):
         super().__init__(app=app, **kwargs)
 
     def reset_to_nsh(self, ready_prompt: str = PROMPT_NSH) -> None:
-        """ "
+        """
         Resets the board and waits until the Nuttshell prompt appears.
         Defaults to 'nsh>'.
         """
