@@ -9,7 +9,7 @@ from pytest_embedded.app import App
 
 class NuttxApp(App):
     """
-    NuttX App class.
+    NuttX App class for Espressif devices.
     Evaluates binary files (firmware and bootloader) and extract information
     required for flashing.
 
@@ -47,7 +47,7 @@ class NuttxApp(App):
         app_file, bootloader_file = None, None
 
         if not bin_files:
-            logging.error('No binary files found with pattern: %s', search_pattern)
+            logging.warning('No binary files found with pattern: %s', search_pattern)
 
         for file in bin_files:
             if 'nuttx' in str(file):
@@ -80,7 +80,10 @@ class NuttxApp(App):
 
         # Call esptool's image_info with the required args,
         # so the correct chip is identified in args.chip
-        args = Namespace(filename=binary_path.as_posix(), chip='auto', version='2')
+        if binary_path:
+            args = Namespace(filename=binary_path.as_posix(), chip='auto', version='2')
+        else:
+            return
         image_info(args)
 
         # Load app image and retrieve flash information

@@ -14,7 +14,7 @@ def test_nuttx_app_info(testdir):
 
     result = testdir.runpytest(
         '-s',
-        '--embedded-services', 'nuttx',
+        '--embedded-services', 'nuttx,esp',
         '--app-path', os.path.join(testdir.tmpdir, "hello_world_nuttx")
     )
 
@@ -35,7 +35,7 @@ def test_nuttx_app_mcuboot(testdir):
 
     result = testdir.runpytest(
         '-s',
-        '--embedded-services', 'nuttx',
+        '--embedded-services', 'nuttx,esp',
         '--app-path', os.path.join(testdir.tmpdir, "hello_world_nuttx_mcuboot")
     )
 

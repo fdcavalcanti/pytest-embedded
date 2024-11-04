@@ -12,8 +12,8 @@ __getattr__ = lazy_load(
         'NuttxApp': NuttxApp,
     },
     {
-        'NuttxSerial': '.serial',
-        'NuttxDut': '.dut',
+        'NuttxSerial': '.serial',  # requires 'esp'
+        'NuttxDut': '.dut',  # requires 'esp'
     },
 )
 
