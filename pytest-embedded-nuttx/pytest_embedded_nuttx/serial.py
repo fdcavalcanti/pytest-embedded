@@ -40,6 +40,9 @@ class NuttxSerial(EspSerial):
             **kwargs,
         )
 
+    def _start(self):
+        pass
+
     @EspSerial.use_esptool()
     def flash(self) -> None:
         """Flash the binary files to the board."""

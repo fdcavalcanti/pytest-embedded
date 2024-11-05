@@ -1,5 +1,6 @@
 import logging
 import re
+from time import sleep
 from typing import AnyStr
 
 import pexpect
@@ -37,6 +38,14 @@ class NuttxDut(SerialDut):
         self.serial.hard_reset()
         self.expect(ready_prompt, timeout=self.PROMPT_TIMEOUT_S)
 
+    def write(self, data: str):
+        """
+        Sleep for a few hundred milliseconds to ensure there is time for
+        Nuttshell prompt appears again, in case of very fast commands.
+        """
+        super().write(data)
+        sleep(0.25)
+
     def return_code(self) -> int:
         """
         Matches the 'echo $?' response and extracts the integer value
@@ -49,7 +58,7 @@ class NuttxDut(SerialDut):
         self.expect(self.PROMPT_NSH, timeout=self.PROMPT_TIMEOUT_S)
 
         self.write('echo $?')
-        echo_match = self.expect(r'echo \$\?\r\n(\d+)', timeout=1)
+        echo_match = self.expect(r'echo \$\?\r\n(\d+)', timeout=self.PROMPT_TIMEOUT_S)
         ret_code = re.findall(r'\d+', echo_match.group().decode())
 
         if not ret_code:
