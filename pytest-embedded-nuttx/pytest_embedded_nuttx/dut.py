@@ -45,11 +45,16 @@ class NuttxDut(SerialDut):
         Returns:
             int: return code.
         """
+        # Wait until nsh is ready
+        self.expect(self.PROMPT_NSH, timeout=self.PROMPT_TIMEOUT_S)
+
         self.write('echo $?')
         echo_match = self.expect(r'echo \$\?\r\n(\d+)', timeout=1)
         ret_code = re.findall(r'\d+', echo_match.group().decode())
+
         if not ret_code:
             logging.error('Failed to retrieve return code')
+
         return int(ret_code[0])
 
     def write_and_return(self, data: str, timeout: int = 2) -> AnyStr:
