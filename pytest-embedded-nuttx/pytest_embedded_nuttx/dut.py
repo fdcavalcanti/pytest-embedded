@@ -32,6 +32,11 @@ class NuttxDut(SerialDut):
         self.serial.hard_reset()
         self.expect(ready_prompt, timeout=self.PROMPT_TIMEOUT_S)
 
+    def return_code(self) -> int:
+        self.write('echo $?')
+        ans = self.expect('\\d+')
+        return int(ans[0])
+
     def write(self, data: str) -> None:
         """Command to write on the Nuttshell prompt."""
         super().write(data)
