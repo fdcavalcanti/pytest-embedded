@@ -1,3 +1,8 @@
+import logging
+import re
+from typing import AnyStr
+
+import pexpect
 from pytest_embedded_serial.dut import SerialDut
 
 from .app import NuttxApp
@@ -33,10 +38,31 @@ class NuttxDut(SerialDut):
         self.expect(ready_prompt, timeout=self.PROMPT_TIMEOUT_S)
 
     def return_code(self) -> int:
-        self.write('echo $?')
-        ans = self.expect('\\d+')
-        return int(ans[0])
+        """
+        Matches the 'echo $?' response and extracts the integer value
+        corresponding to the last program return code.
 
-    def write(self, data: str) -> None:
-        """Command to write on the Nuttshell prompt."""
-        super().write(data)
+        Returns:
+            int: return code.
+        """
+        self.write('echo $?')
+        echo_match = self.expect(r'echo \$\?\r\n(\d+)', timeout=1)
+        ret_code = re.findall(r'\d+', echo_match.group().decode())
+        if not ret_code:
+            logging.error('Failed to retrieve return code')
+        return int(ret_code[0])
+
+    def write_and_return(self, data: str, timeout: int = 2) -> AnyStr:
+        """
+        Writes to Nuttshell and returns all available serial data.
+
+        Args:
+            data: data to be passed on to Nuttshell.
+            timeout: how long to wait for an answer in seconds.
+
+        Returns:
+            AnyStr
+        """
+        self.write(data)
+        ans = self.expect(pexpect.TIMEOUT, timeout=timeout)
+        return ans.rstrip().decode()
