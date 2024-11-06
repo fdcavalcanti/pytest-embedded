@@ -44,6 +44,7 @@ class NuttxApp(App):
         bin_files = list(search_path.rglob(search_pattern))
         app_file, bootloader_file, merge_file = None, None, None
 
+        logging.info('Searching %s', str(search_path))
         if not bin_files:
             logging.warning('No binary files found with pattern: %s', search_pattern)
 
@@ -59,6 +60,7 @@ class NuttxApp(App):
 
         if not app_file:
             logging.error('App file not found: %s', app_file)
+            print(bin_files)
 
         return app_file, bootloader_file, merge_file
 
