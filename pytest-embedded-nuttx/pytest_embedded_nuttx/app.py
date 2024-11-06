@@ -1,9 +1,7 @@
 import logging
-import re
-from argparse import Namespace
 from pathlib import Path
 
-from esptool.cmds import FLASH_MODES, LoadFirmwareImage, image_info
+from esptool.cmds import FLASH_MODES, LoadFirmwareImage
 from pytest_embedded.app import App
 
 
@@ -27,9 +25,9 @@ class NuttxApp(App):
         self.flash_size = None
         self.flash_freq = None
         self.flash_mode = None
-        self.target = None
         self.file_extension = file_extension
-        self.app_file, self.bootloader_file = self._get_bin_files()
+        files = self._get_bin_files()
+        self.app_file, self.bootloader_file, self.merge_file = files
         self._get_binary_target_info()
 
     def _get_bin_files(self) -> list:
@@ -44,21 +42,25 @@ class NuttxApp(App):
         search_path = Path(self.app_path)
         search_pattern = '*' + self.file_extension
         bin_files = list(search_path.rglob(search_pattern))
-        app_file, bootloader_file = None, None
+        app_file, bootloader_file, merge_file = None, None, None
 
         if not bin_files:
             logging.warning('No binary files found with pattern: %s', search_pattern)
 
         for file_path in bin_files:
             file_name = str(file_path.stem)
-            if 'merged' in str(file_name):
-                continue
-            if 'nuttx' in str(file_name):
-                app_file = file_path
-            if 'mcuboot-' in str(file_name):
+            if 'nuttx' in file_name:
+                if 'merged' in file_name:
+                    merge_file = file_path
+                else:
+                    app_file = file_path
+            if 'mcuboot-' in file_name:
                 bootloader_file = file_path
 
-        return app_file, bootloader_file
+        if not app_file:
+            logging.error('App file not found: %s', app_file)
+
+        return app_file, bootloader_file, merge_file
 
     def _get_binary_target_info(self):
         """Binary target should be in the format nuttx.merged.bin, where
@@ -81,17 +83,8 @@ class NuttxApp(App):
         if self.bootloader_file:
             binary_path = self.bootloader_file
 
-        # Call esptool's image_info with the required args,
-        # so the correct chip is identified in args.chip
-        if binary_path:
-            args = Namespace(filename=binary_path.as_posix(), chip='auto', version='2')
-        else:
-            return
-        image_info(args)
-
         # Load app image and retrieve flash information
-        image = LoadFirmwareImage(args.chip, binary_path.as_posix())
-        self.target = re.sub(r'[-()]', '', args.chip.lower())
+        image = LoadFirmwareImage(self.target, binary_path.as_posix())
 
         # Flash Size
         flash_s_bits = image.flash_size_freq & 0xF0
