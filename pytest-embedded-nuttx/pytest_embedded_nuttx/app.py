@@ -50,9 +50,9 @@ class NuttxApp(App):
             logging.warning('No binary files found with pattern: %s', search_pattern)
 
         for file in bin_files:
-            if 'nuttx' in str(file):
+            if 'nuttx' in str(file.stem):
                 app_file = file
-            if 'mcuboot-' in str(file):
+            if 'mcuboot-' in str(file.stem):
                 bootloader_file = file
 
         return app_file, bootloader_file
