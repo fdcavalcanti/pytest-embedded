@@ -34,6 +34,12 @@ class NuttxDut(SerialDut):
         """
         Resets the board and waits until the Nuttshell prompt appears.
         Defaults to 'nsh>'.
+
+        Args:
+            ready_prompt (str): string on prompt that signals completion.
+
+        Returns:
+            None
         """
         self.serial.hard_reset()
         self.expect(ready_prompt, timeout=self.PROMPT_TIMEOUT_S)
@@ -42,6 +48,12 @@ class NuttxDut(SerialDut):
         """
         Sleep for a few hundred milliseconds to ensure there is time for
         Nuttshell prompt appears again, in case of very fast commands.
+
+        Args:
+            data (str): data to be passed on to Nuttshell.
+
+        Returns:
+            None.
         """
         super().write(data)
         sleep(0.25)
@@ -71,8 +83,8 @@ class NuttxDut(SerialDut):
         Writes to Nuttshell and returns all available serial data.
 
         Args:
-            data: data to be passed on to Nuttshell.
-            timeout: how long to wait for an answer in seconds.
+            data (str): data to be passed on to Nuttshell.
+            timeout (int): how long to wait for an answer in seconds.
 
         Returns:
             AnyStr
