@@ -11,11 +11,8 @@ from .app import NuttxApp
 
 class NuttxDut(SerialDut):
     """
-    Dut class for serial ports connect to Espressif boards which are flashed with ESP-IDF apps
-
-    Attributes:
-        target (str): target chip type
-        skip_check_coredump (bool): skip check core dumped or not while dut teardown if set to True
+    Dut class for serial ports connected to Espressif boards which are
+    flashed with NuttX RTOS.
     """
 
     PROMPT_NSH = 'nsh>'
@@ -44,10 +41,10 @@ class NuttxDut(SerialDut):
         self.serial.hard_reset()
         self.expect(ready_prompt, timeout=self.PROMPT_TIMEOUT_S)
 
-    def write(self, data: str):
+    def write(self, data: str) -> None:
         """
-        Sleep for a few hundred milliseconds to ensure there is time for
-        Nuttshell prompt appears again, in case of very fast commands.
+        Write to NuttShell and sleep for a few hundred milliseconds to
+        ensure there is time for Nuttshell prompt appear again.
 
         Args:
             data (str): data to be passed on to Nuttshell.
@@ -80,7 +77,10 @@ class NuttxDut(SerialDut):
 
     def write_and_return(self, data: str, timeout: int = 2) -> AnyStr:
         """
-        Writes to Nuttshell and returns all available serial data.
+        Writes to Nuttshell and returns all available serial data until
+        the timeout.
+        This is useful when parsing and reusing the data is required, and
+        pexect is not enough.
 
         Args:
             data (str): data to be passed on to Nuttshell.

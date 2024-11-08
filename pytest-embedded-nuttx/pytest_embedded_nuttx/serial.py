@@ -8,8 +8,7 @@ from .app import NuttxApp
 
 class NuttxSerial(EspSerial):
     """
-    NuttX serial Dut class
-
+    NuttX serial DUT class.
     """
 
     # Default offset for the primary MCUBoot slot across
