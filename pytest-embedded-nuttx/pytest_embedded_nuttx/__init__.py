@@ -1,4 +1,4 @@
-"""Make pytest-embedded plugin work with Arduino."""
+"""Make pytest-embedded plugin work with NuttX."""
 
 import importlib
 
