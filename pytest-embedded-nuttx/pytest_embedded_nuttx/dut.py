@@ -11,8 +11,7 @@ from .app import NuttxApp
 
 class NuttxDut(SerialDut):
     """
-    Dut class for serial ports connected to Espressif boards which are
-    flashed with NuttX RTOS.
+    Generic DUT class for use with NuttX RTOS.
     """
 
     PROMPT_NSH = 'nsh>'
@@ -20,26 +19,9 @@ class NuttxDut(SerialDut):
 
     def __init__(
         self,
-        app: NuttxApp,
         **kwargs,
     ) -> None:
-        self.target = app.target
-
-        super().__init__(app=app, **kwargs)
-
-    def reset_to_nsh(self, ready_prompt: str = PROMPT_NSH) -> None:
-        """
-        Resets the board and waits until the Nuttshell prompt appears.
-        Defaults to 'nsh>'.
-
-        Args:
-            ready_prompt (str): string on prompt that signals completion.
-
-        Returns:
-            None
-        """
-        self.serial.hard_reset()
-        self.expect(ready_prompt, timeout=self.PROMPT_TIMEOUT_S)
+        super().__init__(**kwargs)
 
     def write(self, data: str) -> None:
         """
@@ -91,3 +73,33 @@ class NuttxDut(SerialDut):
         self.write(data)
         ans = self.expect(pexpect.TIMEOUT, timeout=timeout)
         return ans.rstrip().decode()
+
+
+class NuttxEspDut(NuttxDut):
+    """
+    DUT class for serial ports connected to Espressif boards which are
+    flashed with NuttX RTOS.
+    """
+
+    def __init__(
+        self,
+        app: NuttxApp,
+        **kwargs,
+    ) -> None:
+        self.target = app.target
+
+        super().__init__(app=app, **kwargs)
+
+    def reset_to_nsh(self, ready_prompt: str = NuttxDut.PROMPT_NSH) -> None:
+        """
+        Resets the board and waits until the Nuttshell prompt appears.
+        Defaults to 'nsh>'.
+
+        Args:
+            ready_prompt (str): string on prompt that signals completion.
+
+        Returns:
+            None
+        """
+        self.serial.hard_reset()
+        self.expect(ready_prompt, timeout=NuttxDut.PROMPT_TIMEOUT_S)

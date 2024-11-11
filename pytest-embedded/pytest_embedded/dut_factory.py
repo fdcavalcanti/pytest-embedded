@@ -393,6 +393,13 @@ def _fixture_classes_and_options_fn(
                         'panic_output_decode_script': panic_output_decode_script,
                     })
                 if 'esp' in _services and 'nuttx' in _services:
+                    from pytest_embedded_nuttx import NuttxEspDut
+
+                    classes[fixture] = NuttxEspDut
+                    kwargs[fixture].update({
+                        'serial': None,
+                    })
+                elif 'nuttx' in _services:
                     from pytest_embedded_nuttx import NuttxDut
 
                     classes[fixture] = NuttxDut
