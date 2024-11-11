@@ -52,10 +52,12 @@ class NuttxDut(SerialDut):
         Returns:
             None.
         """
+        super().write('')
+        self.expect(self.PROMPT_NSH, timeout=self.PROMPT_TIMEOUT_S)
         super().write(data)
         sleep(0.25)
 
-    def return_code(self) -> int:
+    def return_code(self, timeout: int = PROMPT_TIMEOUT_S) -> int:
         """
         Matches the 'echo $?' response and extracts the integer value
         corresponding to the last program return code.
@@ -63,11 +65,8 @@ class NuttxDut(SerialDut):
         Returns:
             int: return code.
         """
-        # Wait until nsh is ready
-        self.expect(self.PROMPT_NSH, timeout=self.PROMPT_TIMEOUT_S)
-
         self.write('echo $?')
-        echo_match = self.expect(r'echo \$\?\r\n(\d+)', timeout=self.PROMPT_TIMEOUT_S)
+        echo_match = self.expect(r'echo \$\?\r\n(\d+)', timeout=timeout)
         ret_code = re.findall(r'\d+', echo_match.group().decode())
 
         if not ret_code:
