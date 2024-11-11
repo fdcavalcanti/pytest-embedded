@@ -16,6 +16,7 @@ The arrow points from the dependent service to the service it depends on. For ex
 graph LR
     pytest-embedded-serial
 
+    pytest-embedded-nuttx --> pytest-embedded-serial
     pytest-embedded-nuttx -->|optional, support test on espressif chips| pytest-embedded-serial-esp
 
     pytest-embedded-serial-esp --> pytest-embedded-serial
